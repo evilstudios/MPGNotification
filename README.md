@@ -3,6 +3,8 @@ MPGNotification
 
 MPGNotifications is an iOS control that allows you to display in-app interactive notifications that are fully customisable to suit your needs.
 
+Available via [Cocoapods](http://cocoapods.org/): `pod 'MPGNotification', '~> 1.1'`
+
 ![MPGNotification Screenshot](https://s3.amazonaws.com/evilapples/stash/MPGNotification.png)
 
 ## Overview
@@ -133,6 +135,10 @@ All properties must be set *BEFORE* `show` or `showWithButtonHandler:` is called
 // Sets the button handler block directly; is also be set indirectly by calling showWithButtonHandler:
 // Default: nil
 @property (nonatomic, strong) MPGNotificationButtonHandler buttonHandler;
+
+// Sets a dismiss hanlder block that is called when the Notification is dismissed
+// Default: nil
+@property (nonatomic, copy) MPGNotificationDismissHandler dismissHandler;
 
 // Read-only value of the current button configuration
 // Default: MPGNotificationButtonConfigrationZeroButtons

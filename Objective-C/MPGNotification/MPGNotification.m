@@ -37,10 +37,10 @@ static const CGFloat kNotificationHeight = 64;
 static const CGFloat kIconImageSize = 32.0;
 static const NSTimeInterval kLinearAnimationTime = 0.25;
 
-static const NSString *kTitleFontName = @"HelveticaNeue-Bold";
+const NSString *kTitleFontName = @"HelveticaNeue-Bold";
 static const CGFloat kTitleFontSize = 17.0;
 
-static const NSString *kSubtitleFontName = @"HelveticaNeue";
+const NSString *kSubtitleFontName = @"HelveticaNeue";
 static const CGFloat kSubtitleFontSize = 14.0;
 
 static const CGFloat kButtonFontSize = 13.0;
@@ -158,7 +158,6 @@ static const CGFloat kColorAdjustmentLight = 0.35;
     static const CGFloat kButtonOriginXOffset = 75;
     static const CGFloat kCloseButtonOriginXOffset = 40;
     
-    static const CGFloat kButtonWidthClose = 25;
     static const CGFloat kButtonWidthDefault = 64;
     static const CGFloat kButtonPadding = 2.5;
     
@@ -309,6 +308,8 @@ static const CGFloat kColorAdjustmentLight = 0.35;
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         [self.backgroundView addSubview:self.titleLabel];
         
+        self.titleLabel.backgroundColor = [UIColor clearColor];
+        
         self.titleLabel.font = [UIFont fontWithName:kTitleFontName size:kTitleFontSize];
     }
     
@@ -323,6 +324,8 @@ static const CGFloat kColorAdjustmentLight = 0.35;
     if (!self.subtitleLabel) {
         self.subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(1, 1, 1, 1)];
         [self.backgroundView addSubview:self.subtitleLabel];
+        
+        self.subtitleLabel.backgroundColor = [UIColor clearColor];
         
         self.subtitleLabel.font = [UIFont fontWithName:kSubtitleFontName size:kSubtitleFontSize];
         self.subtitleLabel.numberOfLines = 2;
@@ -527,6 +530,8 @@ static const CGFloat kColorAdjustmentLight = 0.35;
             elasticityBehavior.elasticity = 0.3f;
             [self.animator addBehavior:elasticityBehavior];
             
+            [self _startDismissTimerIfSet];
+            
             break;
         }
             
@@ -544,7 +549,7 @@ static const CGFloat kColorAdjustmentLight = 0.35;
             snapBehaviour.damping = 0.50f;
             [self.animator addBehavior:snapBehaviour];
 
-            
+            [self _startDismissTimerIfSet];
             break;
         }
             
@@ -568,6 +573,7 @@ static const CGFloat kColorAdjustmentLight = 0.35;
                     self.contentOffset = CGPointMake(0, CGRectGetHeight(self.bounds));
                 } completion:^(BOOL finished){
                     [[[[UIApplication sharedApplication] delegate] window] setWindowLevel:self.windowLevel];
+                    
                     [self _destroyNotification];
                 }];
                 break;
@@ -589,6 +595,7 @@ static const CGFloat kColorAdjustmentLight = 0.35;
         
         [[[[UIApplication sharedApplication] delegate] window] setWindowLevel:self.windowLevel];
         
+        [self _dismissBlockHandler];
     }
     
 }
@@ -676,6 +683,7 @@ static const CGFloat kColorAdjustmentLight = 0.35;
 }
 
 - (void)_destroyNotification {
+    [self _dismissBlockHandler];
     
     self.animator.delegate = nil;
     self.animator = nil;
@@ -698,6 +706,12 @@ static const CGFloat kColorAdjustmentLight = 0.35;
         self.buttonHandler(self, responder.tag);
     }
     
+}
+
+- (void)_dismissBlockHandler {
+    if (self.dismissHandler) {
+        self.dismissHandler(self);
+    }
 }
 
 @end
